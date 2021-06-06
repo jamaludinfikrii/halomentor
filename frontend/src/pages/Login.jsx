@@ -1,5 +1,6 @@
 
 import { Form, Input, Button, PageHeader, message } from 'antd';
+import { useEffect } from 'react';
 import Axios from '../config/AxiosConfig'
 
 const Login = () => {
@@ -18,6 +19,17 @@ const Login = () => {
     }
     
   }
+
+  const checkAuth = () => {
+    const token = localStorage.getItem('hm_token')
+    if(token) {
+      window.location.href = '/'
+    }
+  }
+
+  useEffect(() => {
+    checkAuth()
+  }, [])
   return (
     <div className='container'>
       <PageHeader 

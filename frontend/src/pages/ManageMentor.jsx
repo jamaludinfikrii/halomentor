@@ -171,7 +171,7 @@ function ManageMentor() {
       <PageHeader 
         className="site-page-header mb-5"
         title="Halo Mentor"
-        subTitle="Simple Crud"
+        subTitle="CMS"
         backIcon={false}
         extra={[
           <Button key="1" type="primary" onClick={onAddNewMentorClick}>
