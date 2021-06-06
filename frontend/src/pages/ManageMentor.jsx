@@ -1,4 +1,4 @@
-import { Button, Input, PageHeader, Result, Skeleton,message, Card, Popconfirm } from 'antd';
+import { Button, Input, PageHeader, Result, Skeleton,message, Card, Popconfirm, Tag } from 'antd';
 import Avatar from 'antd/lib/avatar/avatar';
 import Modal from 'antd/lib/modal/Modal';
 import { useEffect, useState } from 'react';
@@ -30,7 +30,6 @@ function ManageMentor() {
   const getMentorData = async () => {
     try {
       const response = await Axios.get('/mentors')
-      console.log(response)
       if(response.data.length){
         setPageState('success')
         setMentorData(response.data)
@@ -38,6 +37,12 @@ function ManageMentor() {
         setPageState('empty')
       }
     } catch (error) {
+      if (error.response) {
+        const { message:errMessage } = error.response.data.error
+        message.error(errMessage)
+      }else{
+        message.error(error.message)
+      }
       setPageState('error')
     }
   }
@@ -67,9 +72,15 @@ function ManageMentor() {
         message.success('Add data success')
         getMentorData()
       } catch (error) {
-        message.error(error.message)
+        if (error.response) {
+          const { message:errMessage } = error.response.data.error
+          message.error(errMessage || error.message)
+        }else{
+          message.error(error.message)
+        }
       } finally{
         setIsShowModal(false)
+        clearForm()
       }
     }else{
       message.error('form must be filled')
@@ -91,9 +102,15 @@ function ManageMentor() {
         message.success('Update data success')
         getMentorData()
       } catch (error) {
-        message.error(error.message)
+        if (error.response) {
+          const { message:errMessage } = error.response.data.error
+          message.error(errMessage || error.message)
+        }else{
+          message.error(error.message)
+        }
       } finally{
         setIsShowModal(false)
+        clearForm()
       }
     }
   }
@@ -125,8 +142,28 @@ function ManageMentor() {
       message.success('Delete data success')
       getMentorData()
     } catch (error) {
-      message.error(error.message)
+      if (error.response) {
+        const { message:errMessage } = error.response.data.error
+        message.error(errMessage || error.message)
+      }else{
+        message.error(error.message)
+      }
     }
+  }
+
+  const clearForm = () => {
+    setForm({
+      name: '',
+      email: '',
+      password: '',
+      role: ''
+    })
+    setImageForm(null)
+  }
+
+  const onLogoutClick = () => {
+    localStorage.removeItem('hm_token')
+    window.location.reload()
   }
 
   return (
@@ -140,6 +177,12 @@ function ManageMentor() {
           <Button key="1" type="primary" onClick={onAddNewMentorClick}>
             New Mentor
           </Button>,
+          <Popconfirm title="Are you sure？" okText="Yes" cancelText="No" onConfirm={onLogoutClick}>
+            <Button key="2" type="danger">
+              Logout
+            </Button>
+          </Popconfirm>
+          
         ]}
       />      
       {
@@ -155,28 +198,19 @@ function ManageMentor() {
         ?
         <div className='row'>
           {
-            mentorData.map((mentor) => {
+            mentorData.map((mentor,idx) => {
               return (
-                <div className='col-md-3'>
+                <div className='col-md-3' key={mentor.id}>
                   <Card>
                     <div className='text-center'>
                       <Avatar size={64} src={API_URL + '/' + mentor.avatar}/>
                     </div>
 
-                    <table className='mt-4'>
-                      <tr>
-                        <td className='px-2'> Name : </td>
-                        <td className='px-2'> {mentor.name}</td>
-                      </tr>
-                      <tr>
-                        <td className='px-2'> Email : </td>
-                        <td className='px-2'> {mentor.email}</td>
-                      </tr>
-                      <tr>
-                        <td className='px-2'> Role : </td>
-                        <td className='px-2'> {mentor.role}</td>
-                      </tr>
-                    </table>
+                    <div className='text-center mt-3'>
+                      <div style={{fontWeight:'bold'}}>{mentor.name}</div>
+                      <div className='my-1'>{mentor.email}</div>
+                      <Tag color="green" className='mt-2'>{mentor.role}</Tag>
+                    </div>
 
                     <div className='text-center mt-4'>
                       <Button type="primary" size="small"  onClick={() => onUpdateBtnClick(mentor)}>Update</Button>
@@ -225,7 +259,7 @@ function ManageMentor() {
         {
           isUpdate ?
           null :
-          <Input 
+          <Input.Password 
             placeholder="Password .."
             name="password"
             className="mt-2"

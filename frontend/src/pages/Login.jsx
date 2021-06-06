@@ -5,11 +5,16 @@ import Axios from '../config/AxiosConfig'
 const Login = () => {
   const onFinishForm = async (form) => {
     try {
-      const result = await Axios.post('/register',form)
+      const result = await Axios.post('/auth/login',form)
       localStorage.setItem('hm_token', result.token)
       window.location.href = '/'
     } catch (error) {
-      message.error(error.message)
+      if (error.response) {
+        const { message:errMessage } = error.response.data.error
+        message.error(errMessage || error.message)
+      }else{
+        message.error(error.message)
+      }
     }
     
   }
