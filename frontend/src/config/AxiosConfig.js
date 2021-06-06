@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_URL = 'https://halomentor.herokuapp.com'
+export const API_URL = window.location.host.includes('localhost') ? 'http://localhost:5000/' : 'https://halomentor.herokuapp.com'
 
 const token = localStorage.getItem('hm_token')
 const instance = axios.create({
