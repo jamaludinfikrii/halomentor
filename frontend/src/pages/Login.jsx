@@ -54,7 +54,7 @@ const Login = () => {
               name="email"
               rules={[{ required: true, message: 'Please input your Email!' }]}
             >
-              <Input />
+              <Input placeholder="ex. user@gmail.com" />
             </Form.Item>
 
             <Form.Item
@@ -62,7 +62,7 @@ const Login = () => {
               name="password"
               rules={[{ required: true, message: 'Please input your password!' }]}
             >
-              <Input.Password />
+              <Input.Password placeholder='Enter your password here'/>
             </Form.Item>
 
             <Form.Item>
