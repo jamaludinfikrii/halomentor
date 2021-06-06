@@ -9,7 +9,7 @@ Router.post('/login', (req,res,next) => {
   const { email, password } = req.body
   if(email && password){
     const passwordHashed = passwordHasher(password)
-    const queryLogin = 'select * from mentor where email = ? and password = ?;'
+    const queryLogin = 'select * from users where email = ? and password = ?;'
 
     db.query(queryLogin,[email,passwordHashed], (err,result) => {
       if(err){

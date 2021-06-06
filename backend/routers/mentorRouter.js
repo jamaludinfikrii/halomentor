@@ -3,6 +3,7 @@ const Router = require('express').Router()
 const fileUpload = require('../helpers/fileUpload')
 const passwordHasher = require('../helpers/hasher')
 const fs = require('fs')
+const { auth } = require('../helpers/jwt')
 
 const MAX_IMAGE_SIZE = 1000000
 const ALLOWED_FILE = 'image'
@@ -15,7 +16,7 @@ const IMAGE_MUST_EXIST = 'Image must be uploaded'
 
 
 // get all mentors or filter mentor by email, name, role
-Router.get('/' ,  (req,res,next) => {
+Router.get('/' , auth,  (req,res,next) => {
   let sql = 'select * from mentor'
   const queries = ['email','name','role'].filter(field => req.query[field]);
   if (queries.length) {
@@ -32,7 +33,7 @@ Router.get('/' ,  (req,res,next) => {
 }) 
 
 // get mentor by id
-Router.get('/:id', (req,res,next) => {
+Router.get('/:id', auth, (req,res,next) => {
   const { id } = req.params
   let sql = 'select * from mentor where id = ?'
   db.query( sql, id, (err,result) => {
@@ -42,7 +43,7 @@ Router.get('/:id', (req,res,next) => {
 })
 
 // post new mentor with image upload for avatar
-Router.post('/', (req,res,next) => {
+Router.post('/', auth, (req,res,next) => {
   const upload = fileUpload.single('avatar')
   upload(req,res,(err) => {
     if(err) next(err)
@@ -81,7 +82,7 @@ Router.post('/', (req,res,next) => {
 })
 
 //edit mentor data with image
-Router.patch('/:id', (req,res,next) => {
+Router.patch('/:id', auth, (req,res,next) => {
   const upload = fileUpload.single('avatar')
   const { id } = req.params
   upload(req,res,(err) => {
@@ -107,8 +108,7 @@ Router.patch('/:id', (req,res,next) => {
           try {
             fs.unlinkSync(oldImage)
           } catch (error) {
-            next(error)
-            return
+            console.log(error)
           }
 
           // insert new image to database
@@ -136,7 +136,7 @@ Router.patch('/:id', (req,res,next) => {
   })
 })
 
-Router.delete('/:id' , (req,res,next) => {
+Router.delete('/:id' ,auth, (req,res,next) => {
   const { id } = req.params
   const getAvatarQuery = 'select avatar from mentor where id = ?;'
   db.query(getAvatarQuery, id, (err,result) => {
@@ -151,8 +151,7 @@ Router.delete('/:id' , (req,res,next) => {
     try {
       fs.unlinkSync(oldImage)
     } catch (error) {
-      next(error)
-      return
+      console.log(error)
     }
 
     const deleteQuery = 'delete from mentor where id = ?'

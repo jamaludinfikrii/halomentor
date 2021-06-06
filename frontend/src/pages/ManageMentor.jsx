@@ -132,8 +132,36 @@ function ManageMentor() {
     
   }
 
+  const checkImageDimension = file => {
+    let _URL = window.URL || window.webkitURL;
+    const MAX_MIN_WIDTH = 500
+    const MAX_MIN_HEIGHT = 500
+    let img;
+    if (file) {
+      img = new Image();
+      let objectUrl = _URL.createObjectURL(file);
+      img.onload = function () {
+        console.log(this.width)
+        console.log(this.height)
+        if(this.width !== MAX_MIN_WIDTH || this.height !== MAX_MIN_HEIGHT){
+          message.error('image dimension must be 500 x 500 pixel')
+          _URL.revokeObjectURL(objectUrl);
+          return false
+        }
+        _URL.revokeObjectURL(objectUrl);
+        return true
+      };
+      img.src = objectUrl;
+    }
+  }
+
   const onChangeFile = e => {
-    setImageForm(e.target.files[0])
+    if(checkImageDimension(e.target.files[0])){
+      setImageForm(e.target.files[0])
+    }else{
+      setImageForm(null)
+    }
+
   }
 
   const handleFormChange = e => {
@@ -289,6 +317,7 @@ function ManageMentor() {
         
         <input 
           type='file' 
+          value={imageForm}
           className='mt-3'
           onChange={onChangeFile}
           accept='image/*'
