@@ -43,7 +43,7 @@ const Login = () => {
         backIcon={false}
       />
       <div className='row justify-content-center'>
-        <div className='col-4 border p-5'>
+        <div className='col-md-4 border p-5'>
           <Form
             name="basic"
             layout="vertical"
