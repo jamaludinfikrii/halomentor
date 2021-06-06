@@ -16,6 +16,10 @@ function ManageMentor() {
     role: ''
   });
 
+  const [confirmLoading, setConfirmLoading] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+
   const [isUpdate, setIsUpdate] = useState(false)
   
   useEffect(() => {
@@ -62,6 +66,7 @@ function ManageMentor() {
   }
 
   const insertDataHandle = async () => {
+    setConfirmLoading(true)
     if(form.name && form.email && form.password && form.role && imageForm){
       let fd = new FormData()
       fd.append('avatar', imageForm)
@@ -81,6 +86,7 @@ function ManageMentor() {
       } finally{
         setIsShowModal(false)
         clearForm()
+        setConfirmLoading(false)
       }
     }else{
       message.error('form must be filled')
@@ -88,6 +94,7 @@ function ManageMentor() {
   }
 
   const updateDataHandle = async () => {
+    setConfirmLoading(true)
     if(form.name && form.email && form.role){
       let fd = new FormData()
       fd.append('avatar', imageForm)
@@ -111,6 +118,7 @@ function ManageMentor() {
       } finally{
         setIsShowModal(false)
         clearForm()
+        setConfirmLoading(false)
       }
     }
   }
@@ -137,6 +145,7 @@ function ManageMentor() {
   };
 
   const handleConfirmDelete = async id => {
+    setDeleteLoading(true)
     try {
       await Axios.delete('mentors/' + id )
       message.success('Delete data success')
@@ -148,6 +157,8 @@ function ManageMentor() {
       }else{
         message.error(error.message)
       }
+    }finally{
+      setDeleteLoading(false)
     }
   }
 
@@ -214,7 +225,7 @@ function ManageMentor() {
 
                     <div className='text-center mt-4'>
                       <Button type="primary" size="small"  onClick={() => onUpdateBtnClick(mentor)}>Update</Button>
-                      <Popconfirm title="Are you sure？" okText="Yes" cancelText="No" onConfirm={() => handleConfirmDelete(mentor.id)}>
+                      <Popconfirm okButtonProps={{ loading: deleteLoading }} title="Are you sure？" okText="Yes" cancelText="No" onConfirm={() => handleConfirmDelete(mentor.id)}>
                         <Button type="danger" size="small" >Delete</Button>
                       </Popconfirm>,
                     </div>
@@ -242,7 +253,7 @@ function ManageMentor() {
         />
       }
 
-      <Modal title="Add New Mentor" visible={isShowModal} onOk={onOkModal} onCancel={() => setIsShowModal(false)}>
+      <Modal title="Add New Mentor" visible={isShowModal} confirmLoading={confirmLoading} onOk={onOkModal} onCancel={() => setIsShowModal(false)}>
         <Input 
           placeholder="Mentor Name .."
           name="name"

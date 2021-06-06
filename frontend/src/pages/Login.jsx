@@ -1,13 +1,15 @@
 
 import { Form, Input, Button, PageHeader, message } from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Axios from '../config/AxiosConfig'
 
 const Login = () => {
+  const [isBtnLoading, setIsBtnLoadin] = useState(false);
   const onFinishForm = async (form) => {
+    setIsBtnLoadin(true)
     try {
       const result = await Axios.post('/auth/login',form)
-      localStorage.setItem('hm_token', result.token)
+      localStorage.setItem('hm_token', result.data.token)
       window.location.href = '/'
     } catch (error) {
       if (error.response) {
@@ -16,6 +18,8 @@ const Login = () => {
       }else{
         message.error(error.message)
       }
+    } finally{
+      setIsBtnLoadin(false)
     }
     
   }
@@ -62,7 +66,7 @@ const Login = () => {
             </Form.Item>
 
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" loading={isBtnLoading} htmlType="submit">
                 Submit
               </Button>
             </Form.Item>
