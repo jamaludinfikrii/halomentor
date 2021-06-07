@@ -16,7 +16,7 @@ const IMAGE_MUST_EXIST = 'Image must be uploaded'
 
 
 // get all mentors or filter mentor by email, name, role
-Router.get('/' , auth,  (req,res,next) => {
+Router.get('/' ,  (req,res,next) => {
   let sql = 'select * from mentor'
   const queries = ['email','name','role'].filter(field => req.query[field]);
   if (queries.length) {
@@ -33,7 +33,7 @@ Router.get('/' , auth,  (req,res,next) => {
 }) 
 
 // get mentor by id
-Router.get('/:id', auth, (req,res,next) => {
+Router.get('/:id', (req,res,next) => {
   const { id } = req.params
   let sql = 'select * from mentor where id = ?'
   db.query( sql, id, (err,result) => {

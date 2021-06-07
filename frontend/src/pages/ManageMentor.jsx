@@ -8,7 +8,7 @@ function ManageMentor() {
   const [mentorData, setMentorData] = useState([]);
   const [pageState, setPageState] = useState('loading');
   const [isShowModal, setIsShowModal] = useState(false);
-  const [imageForm, setImageForm] = useState(null);
+  const [imageForm, setImageForm] = useState('');
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -132,36 +132,31 @@ function ManageMentor() {
     
   }
 
-  const checkImageDimension = file => {
-    let _URL = window.URL || window.webkitURL;
-    const MAX_MIN_WIDTH = 500
-    const MAX_MIN_HEIGHT = 500
-    let img;
-    if (file) {
-      img = new Image();
-      let objectUrl = _URL.createObjectURL(file);
-      img.onload = function () {
-        console.log(this.width)
-        console.log(this.height)
-        if(this.width !== MAX_MIN_WIDTH || this.height !== MAX_MIN_HEIGHT){
-          message.error('image dimension must be 500 x 500 pixel')
-          _URL.revokeObjectURL(objectUrl);
-          return false
-        }
-        _URL.revokeObjectURL(objectUrl);
-        return true
-      };
-      img.src = objectUrl;
-    }
-  }
+  // const checkImageDimension = file => {
+  //   let _URL = window.URL || window.webkitURL;
+  //   const MAX_MIN_WIDTH = 500
+  //   const MAX_MIN_HEIGHT = 500
+  //   let img;
+  //   if (file) {
+  //     img = new Image();
+  //     let objectUrl = _URL.createObjectURL(file);
+  //     img.onload = function () {
+  //       console.log(this.width)
+  //       console.log(this.height)
+  //       if(this.width !== MAX_MIN_WIDTH || this.height !== MAX_MIN_HEIGHT){
+  //         message.error('image dimension must be 500 x 500 pixel')
+  //         _URL.revokeObjectURL(objectUrl);
+  //         return false
+  //       }
+  //       _URL.revokeObjectURL(objectUrl);
+  //       return true
+  //     };
+  //     img.src = objectUrl;
+  //   }
+  // }
 
   const onChangeFile = e => {
-    if(checkImageDimension(e.target.files[0])){
-      setImageForm(e.target.files[0])
-    }else{
-      setImageForm(null)
-    }
-
+    setImageForm(e.target.files[0])
   }
 
   const handleFormChange = e => {
@@ -246,7 +241,9 @@ function ManageMentor() {
                     </div>
 
                     <div className='text-center mt-3'>
-                      <div style={{fontWeight:'bold'}}>{mentor.name}</div>
+                      <div style={{fontWeight:'bold'}}>
+                        {mentor.name}
+                      </div>
                       <div className='my-1'>{mentor.email}</div>
                       <Tag color="green" className='mt-2'>{mentor.role}</Tag>
                     </div>
@@ -255,7 +252,7 @@ function ManageMentor() {
                       <Button type="primary" size="small"  onClick={() => onUpdateBtnClick(mentor)}>Update</Button>
                       <Popconfirm okButtonProps={{ loading: deleteLoading }} title="Are you sure？" okText="Yes" cancelText="No" onConfirm={() => handleConfirmDelete(mentor.id)}>
                         <Button type="danger" size="small" >Delete</Button>
-                      </Popconfirm>,
+                      </Popconfirm>
                     </div>
                   </Card>
                 </div>
@@ -283,6 +280,7 @@ function ManageMentor() {
 
       <Modal title="Add New Mentor" visible={isShowModal} confirmLoading={confirmLoading} onOk={onOkModal} onCancel={() => setIsShowModal(false)}>
         <Input 
+          maxLength={35}
           placeholder="Mentor Name .."
           name="name"
           value={form.name}
@@ -309,6 +307,7 @@ function ManageMentor() {
         }
         <Input 
           name="role"
+          maxLength={35}
           placeholder="Role .."
           className="mt-2"
           value={form.role}
@@ -317,7 +316,6 @@ function ManageMentor() {
         
         <input 
           type='file' 
-          value={imageForm}
           className='mt-3'
           onChange={onChangeFile}
           accept='image/*'
